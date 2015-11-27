@@ -1,0 +1,38 @@
+<VirtualHost *:80>
+	ServerAdmin gcutulen@uwaterloo.ca
+	ServerName powertrace.uwaterloo.ca
+
+        <Location />
+                ProxyPass http://localhost:3002/
+                ProxyPassReverse http://localhost:3002/
+        </Location>
+
+	DocumentRoot /home/gcutulen/PwrAnomaly-Web
+	
+        <Directory />
+		Options FollowSymLinks
+		AllowOverride None
+	</Directory>
+	<Directory />
+		Options Indexes FollowSymLinks MultiViews
+		AllowOverride None
+		Order allow,deny
+		allow from all
+	</Directory>
+
+	ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+	<Directory "/usr/lib/cgi-bin">
+		AllowOverride None
+		Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+		Order allow,deny
+		Allow from all
+	</Directory>
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel warn
+
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
