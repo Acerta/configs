@@ -2,7 +2,7 @@
 	ServerAdmin gcutulen@uwaterloo.ca
 	ServerName apma-cvd.uwaterloo.ca
 
-	DocumentRoot /home/sfischme/apma-cvd
+	DocumentRoot /var/local/apma-cvd
 	
         <Directory />
 		Options FollowSymLinks
