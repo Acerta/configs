@@ -2,7 +2,7 @@
 	ServerAdmin gcutulen@uwaterloo.ca
 	ServerName mtags.uwaterloo.ca
 
-	DocumentRoot /home/gcutulen/lifelinevis
+	DocumentRoot /var/local/lifelinevis
 	
         <Directory />
 		Options FollowSymLinks
