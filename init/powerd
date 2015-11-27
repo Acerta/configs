@@ -1,0 +1,39 @@
+#! /bin/bash
+### BEGIN INIT INFO
+# Provides:          powerd
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: This starts the power web demo.
+# Description:       This starts the PwrAnomaly-Web.
+### END INIT INFO
+# Do NOT "set -e"
+
+# PATH should only include /usr/* if it runs after the mountnfs.sh script
+PATH=/usr/local/bin:/sbin:/usr/sbin:/bin:/usr/bin
+NAME=powerd
+PIDFILE=/var/run/$NAME.pid
+SCRIPTNAME=/etc/init.d/$NAME
+PWR=/home/gcutulen/PwrAnomaly-Web
+LOGFILE=/var/log/$NAME.sys.log
+
+case "$1" in
+  start)
+  cd $PWR && forever start app.js
+  ;;
+  stop)
+  cd $PWR && forever stop app.js
+  ;;
+  reload)
+  $0 stop
+  $0 start
+  ;;
+  restart|force-reload)
+  $0 stop
+  $0 start
+  ;;
+esac
+
+exit 0
+

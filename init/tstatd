@@ -1,0 +1,98 @@
+#! /bin/bash
+### BEGIN INIT INFO
+# Provides:          tstatd
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: This starts tstat.
+# Description:       This starts tstat, I swear.
+### END INIT INFO
+# Do NOT "set -e"
+
+# PATH should only include /usr/* if it runs after the mountnfs.sh script
+PATH=/usr/local/bin:/sbin:/usr/sbin:/bin:/usr/bin
+NAME=tstatd
+PIDFILE=/var/run/$NAME.pid
+SCRIPTNAME=/etc/init.d/$NAME
+TSTAT=/var/local/tstat
+LOGFILE=/var/log/$NAME.sys.log
+TSTAT_SITE=$TSTAT/site
+TSTAT_TRACES=$TSTAT/traces
+
+do_start()
+{
+  # TODO Return
+  #   0 if daemon has been started
+  #   1 if daemon was already running
+  #   2 if daemon could not be started
+  do_stop
+  cd $TSTAT_SITE
+  sudo -u www-data env NODE_ENV=production TSTAT_TRACES=$TSTAT_TRACES  \
+    node_modules/.bin/forever \
+    start -p $TSTAT/forever -o out.log -e err.log -a server.js --host 127.0.0.1 --port 3000
+  RETVAL="$?"
+  pidof -s node > $PIDFILE
+  return "$RETVAL"
+}
+
+do_stop()
+{
+  # TODO Return
+  #   0 if daemon has been stopped
+  #   1 if daemon was already stopped
+  #   2 if daemon could not be stopped
+  #   other if a failure occurred
+  cd $TSTAT_SITE
+  sudo -u www-data env TSTAT_TRACES=$TSTAT_TRACES node_modules/.bin/forever stop server.js
+  echo ps -ef | grep -c node
+  if [ $(ps -ef | grep -c node) -gt 1 ]; then
+    echo 'there still are executing node processes'
+    #killall node
+  fi
+ #[[ -f $PIDFILE ]] && killtree `cat $PIDFILE`
+  RETVAL="$?"
+  rm -f $PIDFILE
+  return "$RETVAL"
+}
+
+
+case "$1" in
+  start)
+    do_start
+    case "$?" in
+      0) echo started the server ;;
+      1) echo start failed ;; # TODO server already running
+      2) echo start failed ;;
+    esac
+  ;;
+  stop)
+    do_stop
+    case "$?" in
+      0) echo stopped the server ;;
+      1) echo stop failed. It is probably not running. ;;
+      2) echo stop failed ;;
+    esac
+  ;;
+  restart)
+    do_stop
+    case "$?" in
+      0|1)
+        do_start
+        case "$?" in
+          0) echo good ;;
+          1) echo "old process still running..." ;; # Old process is still running
+          *) echo "failed to start..." ;;
+        esac
+      ;;
+      *) echo bad ;;
+    esac
+  ;;
+  *)
+    echo "Usage: $SCRIPTNAME {start|stop|restart}" >&2
+    exit 3
+  ;;
+esac
+
+:
+
