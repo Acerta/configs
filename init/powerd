@@ -15,7 +15,7 @@ PATH=/usr/local/bin:/sbin:/usr/sbin:/bin:/usr/bin
 NAME=powerd
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
-PWR=/home/gcutulen/PwrAnomaly-Web
+PWR=/var/local/PwrAnomaly-Web
 LOGFILE=/var/log/$NAME.sys.log
 
 case "$1" in
